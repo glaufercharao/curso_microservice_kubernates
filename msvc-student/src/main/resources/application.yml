@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: msvc-student
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/msvc_students_db
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org.hibernate.sql: debug
