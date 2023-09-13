@@ -41,4 +41,9 @@ public class StudentServiceImpl implements StudentService {
         student.orElseThrow(() -> new RuntimeException("Student not found "));
         studentRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Student> findStudentByEmail(String email) {
+        return studentRepository.findByEmail(email);
+    }
 }

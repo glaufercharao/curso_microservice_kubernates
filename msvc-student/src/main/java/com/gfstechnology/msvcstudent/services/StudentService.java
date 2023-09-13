@@ -11,4 +11,6 @@ public interface StudentService {
     Optional<Student> findStudentById(Long id);
     Student saveStudent(Student student);
     void deleteStudent(Long id);
+
+    Optional<Student> findStudentByEmail(String email);
 }
