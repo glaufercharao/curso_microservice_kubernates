@@ -1,7 +1,9 @@
 package com.gfstechnology.msvccourse.resources;
 
-import com.gfstechnology.msvccourse.entities.Course;
+import com.gfstechnology.msvccourse.models.Student;
+import com.gfstechnology.msvccourse.models.entities.Course;
 import com.gfstechnology.msvccourse.services.CourseService;
+import feign.FeignException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class CourseResource {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Course> findById(@PathVariable Long id){
-        return ResponseEntity.ok(service.findCourseById(id).orElseThrow());
+        return ResponseEntity.ok(service.findCourseAndStudentsByIds(id).orElseThrow());
     }
 
     @PostMapping
@@ -62,6 +61,66 @@ public class CourseResource {
     public ResponseEntity<Course> deleteById(@PathVariable Long id){
         service.deleteCourse(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/remove-student/{id}")
+    public ResponseEntity<?> removeCourseStudentById(@PathVariable Long id){
+        service.removeCourseStudentById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/associate-student/{courseId}")
+    public ResponseEntity<?> associateStudent(@RequestBody Student student, @PathVariable Long courseId) {
+        Optional<Student> studentAssociate;
+
+        try {
+            studentAssociate = service.associateStudent(student, courseId);
+        } catch (FeignException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("Erro: ",
+                    "Falha na comunicação entre serviços: "+ e.getMessage()));
+        }
+
+        if(studentAssociate.isPresent()){
+            return  ResponseEntity.status(HttpStatus.CREATED).body(studentAssociate.get());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/save-student/{courseId}")
+    public ResponseEntity<?> saveStudent(@RequestBody Student student, @PathVariable Long courseId) {
+        Optional<Student> studentAssociate;
+
+        try {
+            studentAssociate = service.createStudent(student, courseId);
+        } catch (FeignException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("Erro: ",
+                    "Falha na comunicação entre serviços: "+ e.getMessage()));
+        }
+
+        if(studentAssociate.isPresent()){
+            return  ResponseEntity.status(HttpStatus.CREATED).body(studentAssociate.get());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/disassociate-student/{courseId}")
+    public ResponseEntity<?> disassociateStudent(@RequestBody Student student, @PathVariable Long courseId) {
+        Optional<Student> studentAssociate;
+
+        try {
+            studentAssociate = service.disassociateStudent(student, courseId);
+        } catch (FeignException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("Erro: ",
+                    "Falha na comunicação entre serviços"));
+        }
+
+        if(studentAssociate.isPresent()){
+            return  ResponseEntity.status(HttpStatus.OK).body(studentAssociate.get());
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     private static Map<String, String> validar(BindingResult result) {

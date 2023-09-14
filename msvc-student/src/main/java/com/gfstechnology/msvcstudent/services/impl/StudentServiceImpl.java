@@ -1,5 +1,6 @@
 package com.gfstechnology.msvcstudent.services.impl;
 
+import com.gfstechnology.msvcstudent.client.CourseClientRest;
 import com.gfstechnology.msvcstudent.entities.Student;
 import com.gfstechnology.msvcstudent.repositories.StudentRepository;
 import com.gfstechnology.msvcstudent.services.StudentService;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final CourseClientRest courseClientRest;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,9 +42,17 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> student = findStudentById(id);
         student.orElseThrow(() -> new RuntimeException("Student not found "));
         studentRepository.deleteById(id);
+        courseClientRest.removeCourseStudentById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Student> findByIds(Iterable<Long> ids) {
+        return (List<Student>) studentRepository.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<Student> findStudentByEmail(String email) {
         return studentRepository.findByEmail(email);
     }

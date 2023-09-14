@@ -73,6 +73,12 @@ public class StudentResource {
         service.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/find-all-by-course")
+    public ResponseEntity<?> findAllStudentByCourse(@RequestParam List<Long> ids){
+        return ResponseEntity.ok(service.findByIds(ids));
+    }
+
     private static Map<String, String> validar(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(error -> {
