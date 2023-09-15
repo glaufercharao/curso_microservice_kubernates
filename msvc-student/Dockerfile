@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM openjdk:17-jdk-alpine as builder
 
 WORKDIR /app/msvc-student
 
@@ -16,6 +16,12 @@ COPY ./msvc-student/src ./src
 
 RUN ./mvnw clean package -DskipTests
 
+FROM openjdk:17-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/msvc-student/target/msvc-student-0.0.1-SNAPSHOT.jar .
+
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "./target/msvc-student-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "msvc-student-0.0.1-SNAPSHOT.jar"]
