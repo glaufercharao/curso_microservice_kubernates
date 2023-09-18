@@ -20,8 +20,10 @@ FROM openjdk:17-jdk-alpine
 
 WORKDIR /app
 
+RUN mkdir ./logs
+
 COPY --from=builder /app/msvc-student/target/msvc-student-0.0.1-SNAPSHOT.jar .
 
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "msvc-student-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "msvc-student-0.0.1-SNAPSHOT.jar"]

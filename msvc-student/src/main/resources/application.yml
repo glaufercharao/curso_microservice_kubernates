@@ -3,7 +3,7 @@ spring:
     name: msvc-student
 
   datasource:
-    url: jdbc:mysql://localhost:3306/msvc_students_db
+    url: jdbc:mysql://mysql_server:3306/msvc_students_db
     username: root
     password: toor
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,5 +17,7 @@ server:
   port: 8081
 
 logging:
+  file:
+    path: /app/logs
   level:
     org.hibernate.sql: debug
